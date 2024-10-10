@@ -21,7 +21,7 @@ imageRouter.get(
   "/:href(*)",
   asyncHandler(
     async (
-      { params: { href }, query: { w, h, r } }: Request,
+      { params: { href }, query: { w, h, r, flip, flop } }: Request,
       res: Response
     ) => {
       const paramsStartAt = href.lastIndexOf("/");
@@ -40,6 +40,8 @@ imageRouter.get(
         resizeHeight,
         r,
         rotateAngle,
+        flip,
+        flop,
       });
 
       try {
@@ -54,6 +56,14 @@ imageRouter.get(
           const resizeOptions = getResizeOptions(resizeWidth, resizeHeight);
 
           process.resize(resizeOptions);
+        }
+
+        if (flip || flip === "") {
+          process.flip();
+        }
+
+        if (flop || flop === "") {
+          process.flop();
         }
 
         if (rotateAngle) {
