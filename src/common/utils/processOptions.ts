@@ -1,10 +1,11 @@
 export const getResizeOptions = (w?: string, h?: string) => {
-  // TODO normalize width and height
+  const normalizedWidth = w ? parseInt(w) : undefined;
+  const normalizedHeight = h ? parseInt(h) : undefined;
 
   const resizeOptions: { width?: number; height?: number } = {};
 
-  resizeOptions.width = w ? parseInt(w) : undefined;
-  resizeOptions.height = h ? parseInt(h) : undefined;
+  resizeOptions.width = normalizedWidth;
+  resizeOptions.height = normalizedHeight;
 
   return resizeOptions;
 };
