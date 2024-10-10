@@ -3,7 +3,10 @@ import express, { type Request, type Response, type Router } from "express";
 import asyncHandler from "express-async-handler";
 import sharp from "sharp";
 
-import getResizeOptions from "@/common/utils/getResizeOptions";
+import {
+  getResizeOptions,
+  getRotateOptions,
+} from "@/common/utils/processOptions";
 
 export const imageRouter: Router = express.Router();
 
@@ -16,34 +19,56 @@ imageRouter.get(
 
 imageRouter.get(
   "/:href(*)",
-  asyncHandler(async ({ params: { href }, query }: Request, res: Response) => {
-    const paramsStartAt = href.lastIndexOf("/");
-    const imageUrl = href.slice(0, paramsStartAt);
+  asyncHandler(
+    async (
+      { params: { href }, query: { w, h, r } }: Request,
+      res: Response
+    ) => {
+      const paramsStartAt = href.lastIndexOf("/");
+      const imageUrl = href.slice(0, paramsStartAt);
 
-    const { w, h } = query;
+      const resizeWidth = w?.toString();
+      const resizeHeight = h?.toString();
+      const rotateAngle = r?.toString();
 
-    console.log({ href, imageUrl, query, w, h });
-
-    try {
-      const { data: image } = await axios({
-        url: imageUrl,
-        responseType: "stream",
+      console.log({
+        href,
+        imageUrl,
+        w,
+        resizeWidth,
+        h,
+        resizeHeight,
+        r,
+        rotateAngle,
       });
 
-      const process = sharp();
+      try {
+        const { data: image } = await axios({
+          url: imageUrl,
+          responseType: "stream",
+        });
 
-      if (w || h) {
-        const resizeOptions = getResizeOptions(w?.toString(), h?.toString());
+        const process = sharp();
 
-        process.resize(resizeOptions);
+        if (resizeWidth || resizeHeight) {
+          const resizeOptions = getResizeOptions(resizeWidth, resizeHeight);
+
+          process.resize(resizeOptions);
+        }
+
+        if (rotateAngle) {
+          const rotateOptions = getRotateOptions(rotateAngle);
+
+          process.rotate(rotateOptions);
+        }
+
+        res.type("image/jpeg");
+        image.pipe(process).pipe(res);
+      } catch (error) {
+        console.log({ error });
+
+        res.status(500).send("Error processing image");
       }
-
-      res.type("image/jpeg");
-      image.pipe(process).pipe(res);
-    } catch (error) {
-      console.log({ error });
-
-      res.status(500).send("Error processing image");
     }
-  })
+  )
 );
