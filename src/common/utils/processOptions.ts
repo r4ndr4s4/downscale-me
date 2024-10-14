@@ -30,8 +30,8 @@ export const getResizeOptions = ({
   return resizeOptions;
 };
 
-export const getRotateOptions = (r: string) => {
-  const normalizedAngle = parseInt(r);
+export const getRotateOptions = (rotateAngle: string) => {
+  const normalizedAngle = parseInt(rotateAngle);
 
   let rotateOptions = 0;
 
