@@ -47,13 +47,28 @@ imageRouter.get(
       try {
         const { data: image } = await axios({
           url: imageUrl,
-          responseType: "stream",
+          responseType: "arraybuffer",
         });
 
-        const process = sharp();
+        const process = sharp(image);
+
+        const {
+          width: maxWidth,
+          height: maxHeight,
+          format,
+        } = await process.metadata();
+
+        const newFormat = format === "svg" ? "webp" : format;
+
+        console.log({ maxWidth, maxHeight, format, newFormat });
 
         if (resizeWidth || resizeHeight) {
-          const resizeOptions = getResizeOptions(resizeWidth, resizeHeight);
+          const resizeOptions = getResizeOptions({
+            resizeWidth,
+            resizeHeight,
+            maxWidth,
+            maxHeight,
+          });
 
           process.resize(resizeOptions);
         }
@@ -72,8 +87,13 @@ imageRouter.get(
           process.rotate(rotateOptions);
         }
 
-        res.type("image/jpeg");
-        image.pipe(process).pipe(res);
+        // TODO check if newFormat can be undefined
+        if (newFormat) {
+          process.toFormat(newFormat);
+        }
+
+        res.type(`image/${newFormat}`);
+        process.pipe(res);
       } catch (error) {
         console.log({ error });
 

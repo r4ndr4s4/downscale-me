@@ -1,8 +1,28 @@
-export const getResizeOptions = (w?: string, h?: string) => {
-  const normalizedWidth = w ? parseInt(w) : undefined;
-  const normalizedHeight = h ? parseInt(h) : undefined;
+export const getResizeOptions = ({
+  resizeWidth,
+  resizeHeight,
+  maxWidth,
+  maxHeight,
+}: {
+  resizeWidth?: string;
+  resizeHeight?: string;
+  maxWidth?: number;
+  maxHeight?: number;
+}) => {
+  const normalizedWidth = resizeWidth ? parseInt(resizeWidth) : undefined;
+  const normalizedHeight = resizeHeight ? parseInt(resizeHeight) : undefined;
 
   const resizeOptions: { width?: number; height?: number } = {};
+
+  // TODO check if maxWidth can be undefined
+  if (normalizedWidth && maxWidth && normalizedWidth >= maxWidth) {
+    throw new Error("Invalid width provided for resize");
+  }
+
+  // TODO check if maxHeight can be undefined
+  if (normalizedHeight && maxHeight && normalizedHeight >= maxHeight) {
+    throw new Error("Invalid height provided for resize");
+  }
 
   resizeOptions.width = normalizedWidth;
   resizeOptions.height = normalizedHeight;
@@ -16,7 +36,7 @@ export const getRotateOptions = (r: string) => {
   let rotateOptions = 0;
 
   if (normalizedAngle % 90 !== 0) {
-    throw new Error("Invalid rotation angle");
+    throw new Error("Invalid angle provided for rotate");
   }
 
   rotateOptions = normalizedAngle;
