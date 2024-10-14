@@ -1,3 +1,5 @@
+import { scale } from "proportional-scale";
+
 export const getResizeOptions = ({
   resizeWidth,
   resizeHeight,
@@ -42,4 +44,47 @@ export const getRotateOptions = (rotateAngle: string) => {
   rotateOptions = normalizedAngle;
 
   return rotateOptions;
+};
+
+export const getBlurOptions = ({
+  resizeWidth,
+  resizeHeight,
+  originalWidth,
+  originalHeight,
+}: {
+  resizeWidth?: string;
+  resizeHeight?: string;
+  originalWidth?: number;
+  originalHeight?: number;
+}) => {
+  const normalizedWidth = resizeWidth ? parseInt(resizeWidth) : originalWidth;
+  const normalizedHeight = resizeHeight
+    ? parseInt(resizeHeight)
+    : originalHeight;
+
+  // TODO check if originalWidth, originalHeight can be undefined
+  if (
+    !originalWidth ||
+    !originalHeight ||
+    !normalizedWidth ||
+    !normalizedHeight
+  ) {
+    throw new Error("Invalid width or height provided for blur");
+  }
+
+  const { scale: resizeScale } = scale({
+    width: originalWidth,
+    height: originalHeight,
+    maxWidth: normalizedWidth,
+    maxHeight: normalizedHeight,
+  });
+
+  let blurOptions = 0;
+
+  blurOptions = (originalWidth / 200) * resizeScale;
+
+  blurOptions = Math.max(0.3, blurOptions);
+  blurOptions = Math.min(25, blurOptions);
+
+  return blurOptions;
 };

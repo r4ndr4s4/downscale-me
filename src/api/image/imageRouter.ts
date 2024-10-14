@@ -4,6 +4,7 @@ import asyncHandler from "express-async-handler";
 import sharp from "sharp";
 
 import {
+  getBlurOptions,
   getResizeOptions,
   getRotateOptions,
 } from "@/common/utils/processOptions";
@@ -21,7 +22,7 @@ imageRouter.get(
   "/:href(*)",
   asyncHandler(
     async (
-      { params: { href }, query: { w, h, r, flip, flop } }: Request,
+      { params: { href }, query: { w, h, r, flip, flop, grey, blur } }: Request,
       res: Response
     ) => {
       const paramsStartAt = href.lastIndexOf("/");
@@ -42,6 +43,8 @@ imageRouter.get(
         rotateAngle,
         flip,
         flop,
+        grey,
+        blur,
       });
 
       try {
@@ -53,21 +56,21 @@ imageRouter.get(
         const process = sharp(image);
 
         const {
-          width: maxWidth,
-          height: maxHeight,
+          width: originalWidth,
+          height: originalHeight,
           format,
         } = await process.metadata();
 
         const newFormat = format === "svg" ? "webp" : format;
 
-        console.log({ maxWidth, maxHeight, format, newFormat });
+        console.log({ originalWidth, originalHeight, format, newFormat });
 
         if (resizeWidth || resizeHeight) {
           const resizeOptions = getResizeOptions({
             resizeWidth,
             resizeHeight,
-            maxWidth,
-            maxHeight,
+            maxWidth: originalWidth,
+            maxHeight: originalHeight,
           });
 
           process.resize(resizeOptions);
@@ -85,6 +88,21 @@ imageRouter.get(
           const rotateOptions = getRotateOptions(rotateAngle);
 
           process.rotate(rotateOptions);
+        }
+
+        if (grey || grey === "") {
+          process.greyscale();
+        }
+
+        if (blur || blur === "") {
+          const blurOptions = getBlurOptions({
+            resizeWidth,
+            resizeHeight,
+            originalWidth,
+            originalHeight,
+          });
+
+          process.blur(blurOptions);
         }
 
         // TODO check if newFormat can be undefined
