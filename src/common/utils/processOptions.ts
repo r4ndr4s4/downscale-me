@@ -17,11 +17,13 @@ export const getResizeOptions = ({
   const resizeOptions: { width?: number; height?: number } = {};
 
   // TODO check if maxWidth can be undefined
+  // TODO handle negative values
   if (normalizedWidth && maxWidth && normalizedWidth >= maxWidth) {
     throw new Error("Invalid width provided for resize");
   }
 
   // TODO check if maxHeight can be undefined
+  // TODO handle negative values
   if (normalizedHeight && maxHeight && normalizedHeight >= maxHeight) {
     throw new Error("Invalid height provided for resize");
   }
