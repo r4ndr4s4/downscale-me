@@ -6,46 +6,27 @@ export const getResizeOptions = ({
   maxWidth,
   maxHeight,
 }: {
-  resizeWidth?: string;
-  resizeHeight?: string;
+  resizeWidth?: number;
+  resizeHeight?: number;
   maxWidth?: number;
   maxHeight?: number;
 }) => {
-  const normalizedWidth = resizeWidth ? parseInt(resizeWidth) : undefined;
-  const normalizedHeight = resizeHeight ? parseInt(resizeHeight) : undefined;
-
   const resizeOptions: { width?: number; height?: number } = {};
 
   // TODO check if maxWidth can be undefined
-  // TODO handle negative values
-  if (normalizedWidth && maxWidth && normalizedWidth >= maxWidth) {
+  if (resizeWidth && maxWidth && resizeWidth >= maxWidth) {
     throw new Error("Invalid width provided for resize");
   }
 
   // TODO check if maxHeight can be undefined
-  // TODO handle negative values
-  if (normalizedHeight && maxHeight && normalizedHeight >= maxHeight) {
+  if (resizeHeight && maxHeight && resizeHeight >= maxHeight) {
     throw new Error("Invalid height provided for resize");
   }
 
-  resizeOptions.width = normalizedWidth;
-  resizeOptions.height = normalizedHeight;
+  resizeOptions.width = resizeWidth;
+  resizeOptions.height = resizeHeight;
 
   return resizeOptions;
-};
-
-export const getRotateOptions = (rotateAngle: string) => {
-  const normalizedAngle = parseInt(rotateAngle);
-
-  let rotateOptions = 0;
-
-  if (normalizedAngle % 90 !== 0) {
-    throw new Error("Invalid angle provided for rotate");
-  }
-
-  rotateOptions = normalizedAngle;
-
-  return rotateOptions;
 };
 
 export const getBlurOptions = ({
@@ -54,15 +35,13 @@ export const getBlurOptions = ({
   originalWidth,
   originalHeight,
 }: {
-  resizeWidth?: string;
-  resizeHeight?: string;
+  resizeWidth?: number;
+  resizeHeight?: number;
   originalWidth?: number;
   originalHeight?: number;
 }) => {
-  const normalizedWidth = resizeWidth ? parseInt(resizeWidth) : originalWidth;
-  const normalizedHeight = resizeHeight
-    ? parseInt(resizeHeight)
-    : originalHeight;
+  const normalizedWidth = resizeWidth || originalWidth;
+  const normalizedHeight = resizeHeight || originalHeight;
 
   // TODO check if originalWidth, originalHeight can be undefined
   if (
