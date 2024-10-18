@@ -8,6 +8,9 @@ import {
   getResizeOptions,
 } from "@/common/utils/processOptions";
 import { Format, ParamsValidator, QueryValidator } from "@/common/utils/types";
+import sql from "@/common/utils/database";
+
+const KEY_ID = "e68ada4d-da4d-4c0f-8778-d484e1806805"; // TODO
 
 export const imageRouter: Router = express.Router();
 
@@ -167,6 +170,19 @@ imageRouter.get(
     // TODO check if newFormat can be undefined
     if (newFormat) {
       process.toFormat(newFormat);
+    }
+
+    try {
+      await sql`insert into logs
+      (image, key_id, width, height, rotate, format, quality, flip, flop, greyscale, blur, request, response, status)
+      values
+      (${imageUrl}, ${KEY_ID}, ${resizeWidth || null}, ${
+        resizeHeight || null
+      }, ${rotateAngle || null}, ${
+        newFormat || null
+      }, null, false, false, false, false, 'request', 'response', 'OK')`;
+    } catch (error) {
+      console.log({ error });
     }
 
     res.type(`image/${newFormat}`);
