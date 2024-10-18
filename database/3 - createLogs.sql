@@ -13,7 +13,7 @@ CREATE TABLE public.logs (
 	blur bool DEFAULT false NOT NULL,
 	request text NOT NULL,
 	response text NOT NULL,
-	status text NOT NULL, -- TODO: enum
+	status text DEFAULT 'OK' NOT NULL, -- TODO: enum
 	meta json NULL,
 	created_at timestamptz DEFAULT now() NOT NULL,
     updated_at timestamptz DEFAULT now() NOT NULL, -- TODO: procedure: https://stackoverflow.com/a/9556527
