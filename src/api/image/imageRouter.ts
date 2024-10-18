@@ -52,6 +52,20 @@ imageRouter.get(
       const isGreyscale = trueIfProvided(grey);
       const isBlur = trueIfProvided(blur);
 
+      if (
+        !resizeWidth &&
+        !resizeHeight &&
+        !rotateAngle &&
+        !toFormat &&
+        !toQuality &&
+        !isFlip &&
+        !isFlop &&
+        !isGreyscale &&
+        !isBlur
+      ) {
+        throw new Error("No transformation requested");
+      }
+
       console.log({
         href,
         imageUrl,
@@ -77,6 +91,7 @@ imageRouter.get(
         width: originalWidth,
         height: originalHeight,
         format,
+        pages,
       } = await process.metadata();
 
       // TODO check if format can be undefined
@@ -88,6 +103,10 @@ imageRouter.get(
         format,
         newFormat,
       });
+
+      if (rotateAngle && pages) {
+        throw new Error("Cannot rotate animated images");
+      }
 
       if (resizeWidth || resizeHeight) {
         const resizeOptions = getResizeOptions({
