@@ -15,7 +15,7 @@ import {
   QueryValidator,
 } from "@/common/utils/utils";
 
-const KEY_ID = "e68ada4d-da4d-4c0f-8778-d484e1806805"; // TODO
+const KEY_ID = "13716c77-bfec-4bd5-9bdf-3a76a9d1f232"; // TODO
 
 export const imageRouter: Router = express.Router();
 
@@ -190,7 +190,7 @@ imageRouter.get(
         width: resizeWidth || null,
         height: resizeHeight || null,
         rotate: rotateAngle || null,
-        format: newFormat || null,
+        format: format === newFormat ? null : newFormat,
         quality: toQuality || null,
         flip: isFlip,
         flop: isFlop,
