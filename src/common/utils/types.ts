@@ -32,16 +32,16 @@ interface TableCommon {
   is_deleted: boolean;
 }
 
-export interface Users extends TableCommon {
+export interface User extends TableCommon {
   name: string;
   email: string;
 }
 
-export interface Keys extends TableCommon {
+export interface Key extends TableCommon {
   user_id: string;
 }
 
-export interface Logs extends TableCommon {
+export interface Log extends TableCommon {
   image: string;
   key_id: string;
 

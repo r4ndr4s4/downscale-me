@@ -1,7 +1,5 @@
 import { z } from "zod";
 
-import { Format } from "./types";
-
 const ResizeParam = z.coerce
   .number()
   .int()
@@ -33,6 +31,7 @@ export const QueryValidator = z
     flop: BooleanParam,
     grey: BooleanParam,
     blur: BooleanParam,
+    apiKey: z.string().uuid().optional(),
   })
   .strict();
 

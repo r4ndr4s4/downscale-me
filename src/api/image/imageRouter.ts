@@ -15,8 +15,6 @@ import {
   QueryValidator,
 } from "@/common/utils/utils";
 
-const KEY_ID = "13716c77-bfec-4bd5-9bdf-3a76a9d1f232"; // TODO
-
 export const imageRouter: Router = express.Router();
 
 imageRouter.get(
@@ -29,7 +27,7 @@ imageRouter.get(
 imageRouter.get(
   "/:href(*)",
   asyncHandler(
-    async ({ params, query, originalUrl }: Request, res: Response) => {
+    async ({ params, query, originalUrl, key }: Request, res: Response) => {
       const { href } = ParamsValidator.parse(params);
 
       const paramsStartAt = href.lastIndexOf("/");
@@ -205,7 +203,7 @@ imageRouter.get(
       // TODO move to middleware?
       const logEntry = {
         image: imageUrl,
-        key_id: KEY_ID,
+        key_id: key.id,
         width: resizeWidth || null,
         height: resizeHeight || null,
         rotate: rotateAngle || null,
