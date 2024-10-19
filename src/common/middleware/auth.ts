@@ -2,7 +2,14 @@ import { Request, Response, NextFunction } from "express";
 import { z } from "zod";
 
 import sql from "../utils/database";
-import { Key } from "../utils/types";
+
+interface KeyWithUser {
+  key_id: string;
+
+  user_id: string;
+  name: string;
+  email: string;
+}
 
 export const auth = async (
   req: Request,
@@ -27,19 +34,23 @@ export const auth = async (
     });
   }
 
-  // TODO join with users
-  const [key] = await sql<
-    Key[]
-  >`SELECT * FROM keys WHERE id=${apiKey} AND is_deleted=false`;
+  const [keyWithUser] = await sql<
+    KeyWithUser[]
+  >`SELECT k.id AS key_id, u.id AS user_id, u.name, u.email FROM keys k INNER JOIN users u ON k.user_id=u.id WHERE k.id=${apiKey} AND k.is_deleted=false AND u.is_deleted=false`;
 
-  if (!key) {
+  if (!keyWithUser) {
     return res.status(401).json({
       status: "error",
       message: "Invalid X-Api-Key header provided.",
     });
   }
 
-  req.key = key;
+  req.key = keyWithUser.key_id;
+  req.user = {
+    id: keyWithUser.user_id,
+    name: keyWithUser.name,
+    email: keyWithUser.email,
+  };
 
   return next();
 };

@@ -5,7 +5,13 @@ export {};
 declare global {
   namespace Express {
     interface Request {
-      key: Key;
+      key: string;
+
+      user: {
+        id: string;
+        name: string;
+        email: string;
+      };
     }
   }
 }

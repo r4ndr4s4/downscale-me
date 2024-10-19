@@ -203,7 +203,7 @@ imageRouter.get(
       // TODO move to middleware?
       const logEntry = {
         image: imageUrl,
-        key_id: key.id,
+        key_id: key,
         width: resizeWidth || null,
         height: resizeHeight || null,
         rotate: rotateAngle || null,
