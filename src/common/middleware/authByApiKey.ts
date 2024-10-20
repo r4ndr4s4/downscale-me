@@ -11,7 +11,7 @@ interface KeyWithUser {
   email: string;
 }
 
-export const auth = async (
+export const authByApiKey = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -55,4 +55,4 @@ export const auth = async (
   return next();
 };
 
-export default auth;
+export default authByApiKey;

@@ -9,7 +9,7 @@ import { imageRouter } from "@/api/image/imageRouter";
 import errorHandler from "@/common/middleware/errorHandler";
 import requestLogger from "@/common/middleware/requestLogger";
 import { env } from "@/common/utils/envConfig";
-import auth from "./common/middleware/auth";
+import authByApiKey from "./common/middleware/authByApiKey";
 
 const logger = pino({ name: "server start" });
 const app: Express = express();
@@ -26,7 +26,7 @@ app.use(helmet());
 // Request logging
 app.use(requestLogger);
 
-app.use(auth);
+app.use(authByApiKey);
 
 // Routes
 app.use("/health-check", healthCheckRouter);
