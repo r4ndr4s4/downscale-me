@@ -10,6 +10,7 @@ import errorHandler from "@/common/middleware/errorHandler";
 import requestLogger from "@/common/middleware/requestLogger";
 import { env } from "@/common/utils/envConfig";
 import authByApiKey from "./common/middleware/authByApiKey";
+import checkLimits from "./common/middleware/checkLimits";
 
 const logger = pino({ name: "server start" });
 const app: Express = express();
@@ -31,7 +32,7 @@ app.use(authByApiKey);
 // Routes
 app.use("/health-check", healthCheckRouter);
 app.use("/users", userRouter);
-app.use("/image", imageRouter);
+app.use("/image", checkLimits, imageRouter);
 
 // Error handlers
 app.use(errorHandler());

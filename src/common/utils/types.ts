@@ -58,3 +58,9 @@ export interface Log extends TableCommon {
   request: string;
   response: string;
 }
+
+export interface Limit extends TableCommon {
+  requests: number;
+  days: number;
+  key_id: string;
+}
