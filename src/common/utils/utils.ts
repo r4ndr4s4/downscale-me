@@ -1,3 +1,4 @@
+import { NextFunction, Request, Response } from "express";
 import { z } from "zod";
 
 const ResizeParam = z.coerce
@@ -45,3 +46,15 @@ export const ParamsValidator = z
   .strict();
 
 export const trueIfProvided = (value?: string) => value === "";
+
+export const timeoutHalt = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  if (!req.timedout) {
+    next();
+  } else {
+    req.socket.destroy();
+  }
+};

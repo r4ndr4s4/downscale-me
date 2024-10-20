@@ -2,6 +2,7 @@ import cors from "cors";
 import express, { type Express } from "express";
 import helmet from "helmet";
 import { pino } from "pino";
+import timeout from "connect-timeout";
 
 import { healthCheckRouter } from "@/api/healthCheck/healthCheckRouter";
 import { userRouter } from "@/api/user/userRouter";
@@ -11,6 +12,7 @@ import requestLogger from "@/common/middleware/requestLogger";
 import { env } from "@/common/utils/envConfig";
 import authByApiKey from "./common/middleware/authByApiKey";
 import checkLimits from "./common/middleware/checkLimits";
+import { timeoutHalt } from "./common/utils/utils";
 
 const logger = pino({ name: "server start" });
 const app: Express = express();
@@ -32,7 +34,7 @@ app.use(authByApiKey);
 // Routes
 app.use("/health-check", healthCheckRouter);
 app.use("/users", userRouter);
-app.use("/image", checkLimits, imageRouter);
+app.use("/image", checkLimits, timeout("5s"), timeoutHalt, imageRouter);
 
 // Error handlers
 app.use(errorHandler());

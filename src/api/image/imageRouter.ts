@@ -221,6 +221,7 @@ imageRouter.get(
       await sql`INSERT INTO logs ${sql(logEntry)}`;
 
       res.type(`image/${newFormat}`);
+      process.timeout({ seconds: 3 });
       process.pipe(res);
     }
   )
