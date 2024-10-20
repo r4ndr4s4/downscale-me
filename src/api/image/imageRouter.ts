@@ -213,7 +213,7 @@ imageRouter.get(
         flop: isFlop,
         greyscale: isGreyscale,
         blur: isBlur,
-        request: originalUrl, // TODO api key
+        request: originalUrl,
         response: "SERVED_FROM_TRANSFORM", // TODO log errors, save "served from cache", etc.
       };
 
