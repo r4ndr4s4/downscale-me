@@ -122,7 +122,7 @@ imageRouter.get(
 
       if (cachedFile) {
         // TODO logging
-        res.type(`image/svg`);
+        res.type(`image/${newFormat}`);
         res.set("Cache-Control", `public, max-age=${60 * 60 * 24}`);
 
         cachedFile.pipe(res);
