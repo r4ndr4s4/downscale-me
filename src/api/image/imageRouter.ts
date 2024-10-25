@@ -14,6 +14,12 @@ import {
   ParamsValidator,
   QueryValidator,
 } from "@/common/utils/utils";
+import {
+  getParamsObj,
+  addParams,
+  normalizeName,
+  cacheFile,
+} from "@/common/utils/storage";
 
 export const imageRouter: Router = express.Router();
 
@@ -221,7 +227,28 @@ imageRouter.get(
       await sql`INSERT INTO logs ${sql(logEntry)}`;
 
       res.type(`image/${newFormat}`);
+      res.set("Cache-Control", `public, max-age=${60 * 60 * 24}`);
+
       process.timeout({ seconds: 3 });
+
+      const paramsObj = getParamsObj({
+        resizeWidth,
+        resizeHeight,
+        rotateAngle,
+        isFlip,
+        isFlop,
+        isGreyscale,
+        isBlur,
+        toQuality,
+      });
+
+      const cacheFileName = `${key}/${normalizeName(imageUrl)}-${addParams(
+        paramsObj
+      )}.${newFormat}`;
+
+      // TODO await?
+      await cacheFile(cacheFileName, process);
+
       process.pipe(res);
     }
   )
