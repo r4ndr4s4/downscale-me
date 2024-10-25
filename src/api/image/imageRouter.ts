@@ -9,11 +9,7 @@ import {
 } from "@/common/utils/processOptions";
 import { Format } from "@/common/utils/types";
 import sql from "@/common/utils/database";
-import {
-  trueIfProvided,
-  ParamsValidator,
-  QueryValidator,
-} from "@/common/utils/utils";
+import { ParamsValidator } from "@/common/utils/utils";
 import {
   getParamsObj,
   addParams,
@@ -34,46 +30,21 @@ imageRouter.get(
 imageRouter.get(
   "/:href(*)",
   asyncHandler(
-    async ({ params, query, originalUrl, key }: Request, res: Response) => {
+    async (
+      { params, originalUrl, key, parsedParams }: Request,
+      res: Response
+    ) => {
       const { href } = ParamsValidator.parse(params);
 
       const paramsStartAt = href.lastIndexOf("/");
       const imageUrl = href.slice(0, paramsStartAt);
 
-      const {
-        w: resizeWidth,
-        h: resizeHeight,
-        r: rotateAngle,
-        to: toFormat,
-        q: toQuality,
-        flip,
-        flop,
-        grey,
-        blur,
-      } = QueryValidator.parse(query);
-
-      const isFlip = trueIfProvided(flip);
-      const isFlop = trueIfProvided(flop);
-      const isGreyscale = trueIfProvided(grey);
-      const isBlur = trueIfProvided(blur);
-
-      if (
-        !resizeWidth &&
-        !resizeHeight &&
-        !rotateAngle &&
-        !toFormat &&
-        !toQuality &&
-        !isFlip &&
-        !isFlop &&
-        !isGreyscale &&
-        !isBlur
-      ) {
-        throw new Error("No transformation requested");
-      }
-
       console.log({
         href,
         imageUrl,
+      });
+
+      const {
         resizeWidth,
         resizeHeight,
         rotateAngle,
@@ -83,6 +54,10 @@ imageRouter.get(
         isBlur,
         toFormat,
         toQuality,
+      } = parsedParams;
+
+      console.log({
+        parsedParams,
       });
 
       const { data: image } = await axios({

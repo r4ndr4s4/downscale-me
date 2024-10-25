@@ -20,6 +20,8 @@ export type Format =
   | "v"
   | "webp";
 
+export type ToFormat = "jpeg" | "png" | "webp" | "gif" | "avif" | "tiff";
+
 interface TableCommon {
   id: string;
 

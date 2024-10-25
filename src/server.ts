@@ -13,6 +13,7 @@ import { env } from "@/common/utils/envConfig";
 import authByApiKey from "./common/middleware/authByApiKey";
 import checkLimits from "./common/middleware/checkLimits";
 import { timeoutHalt } from "./common/utils/utils";
+import parseParams from "./common/middleware/parseParams";
 
 const logger = pino({ name: "server start" });
 const app: Express = express();
@@ -29,12 +30,18 @@ app.use(helmet());
 // Request logging
 app.use(requestLogger);
 
-app.use(authByApiKey);
-
 // Routes
 app.use("/health-check", healthCheckRouter);
 app.use("/users", userRouter);
-app.use("/image", checkLimits, timeout("5s"), timeoutHalt, imageRouter);
+app.use(
+  "/image",
+  authByApiKey,
+  parseParams,
+  checkLimits,
+  timeout("5s"),
+  timeoutHalt,
+  imageRouter
+);
 
 // Error handlers
 app.use(errorHandler());

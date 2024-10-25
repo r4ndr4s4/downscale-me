@@ -26,7 +26,7 @@ export const QueryValidator = z
     w: ResizeParam,
     h: ResizeParam,
     r: PositiveRotateParam.or(NegativeRotateParam),
-    to: z.enum(["jpeg", "png", "webp", "gif", "avif", "tiff"]).optional(),
+    to: z.enum(["jpeg", "png", "webp", "gif", "avif", "tiff"]).optional(), // TODO reuse ToFormat
     q: z.coerce.number().int().min(1).max(100).optional(),
     flip: BooleanParam,
     flop: BooleanParam,
