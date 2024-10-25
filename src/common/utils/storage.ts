@@ -51,3 +51,17 @@ export async function cacheFile(fileName: string, sourceStream: sharp.Sharp) {
     console.log(`${fileName} uploaded to ${BUCKET_NAME}`);
   });
 }
+
+export async function loadCachedFile(fileName: string) {
+  const file = await storage.bucket(BUCKET_NAME).file(fileName);
+
+  const [isFileExists] = await file.exists();
+
+  if (!isFileExists) {
+    return null;
+  }
+
+  return file.createReadStream().on("finish", () => {
+    console.log(`${fileName} downloaded from ${BUCKET_NAME}`);
+  });
+}

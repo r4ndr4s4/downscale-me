@@ -19,6 +19,7 @@ import {
   addParams,
   normalizeName,
   cacheFile,
+  loadCachedFile,
 } from "@/common/utils/storage";
 
 export const imageRouter: Router = express.Router();
@@ -100,6 +101,34 @@ imageRouter.get(
 
       // TODO check if format can be undefined
       let newFormat: Format | undefined = format === "svg" ? "webp" : format;
+
+      // TODO move above axios request?
+      const paramsObj = getParamsObj({
+        resizeWidth,
+        resizeHeight,
+        rotateAngle,
+        isFlip,
+        isFlop,
+        isGreyscale,
+        isBlur,
+        toQuality,
+      });
+
+      const cacheFileName = `${key}/${normalizeName(imageUrl)}-${addParams(
+        paramsObj
+      )}.${newFormat}`;
+
+      const cachedFile = await loadCachedFile(cacheFileName);
+
+      if (cachedFile) {
+        // TODO logging
+        res.type(`image/svg`);
+        res.set("Cache-Control", `public, max-age=${60 * 60 * 24}`);
+
+        cachedFile.pipe(res);
+
+        return;
+      }
 
       console.log({
         originalWidth,
@@ -229,22 +258,7 @@ imageRouter.get(
       res.type(`image/${newFormat}`);
       res.set("Cache-Control", `public, max-age=${60 * 60 * 24}`);
 
-      process.timeout({ seconds: 3 });
-
-      const paramsObj = getParamsObj({
-        resizeWidth,
-        resizeHeight,
-        rotateAngle,
-        isFlip,
-        isFlop,
-        isGreyscale,
-        isBlur,
-        toQuality,
-      });
-
-      const cacheFileName = `${key}/${normalizeName(imageUrl)}-${addParams(
-        paramsObj
-      )}.${newFormat}`;
+      process.timeout({ seconds: 3 }); // TODO move up?
 
       // TODO await?
       await cacheFile(cacheFileName, process);
