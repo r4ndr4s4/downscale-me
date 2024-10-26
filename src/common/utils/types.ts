@@ -20,6 +20,7 @@ export type Format =
   | "v"
   | "webp";
 
+// only used in QueryValidator, jpg and tif shouldn't be accepted, svg is not supported
 export type ToFormat = "jpeg" | "png" | "webp" | "gif" | "avif" | "tiff";
 
 interface TableCommon {

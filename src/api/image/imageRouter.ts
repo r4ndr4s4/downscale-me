@@ -10,15 +10,23 @@ import {
 import { Format } from "@/common/utils/types";
 import sql from "@/common/utils/database";
 import { ParamsValidator } from "@/common/utils/utils";
-import {
-  getParamsObj,
-  addParams,
-  normalizeName,
-  cacheFile,
-  loadCachedFile,
-} from "@/common/utils/storage";
+import { cacheFile } from "@/common/utils/storage";
+import lookUpInCache from "@/common/middleware/lookUpInCache";
 
 export const imageRouter: Router = express.Router();
+
+imageRouter.param("href", (req, res, next) => {
+  const { params } = req;
+
+  const { href } = ParamsValidator.parse(params);
+
+  const paramsStartAt = href.lastIndexOf("/");
+  const imageUrl = href.slice(0, paramsStartAt);
+
+  req.imageUrl = imageUrl;
+
+  next();
+});
 
 imageRouter.get(
   "/",
@@ -29,21 +37,12 @@ imageRouter.get(
 
 imageRouter.get(
   "/:href(*)",
+  lookUpInCache,
   asyncHandler(
     async (
-      { params, originalUrl, key, parsedParams }: Request,
+      { originalUrl, key, parsedParams, imageUrl, cacheFileName }: Request,
       res: Response
     ) => {
-      const { href } = ParamsValidator.parse(params);
-
-      const paramsStartAt = href.lastIndexOf("/");
-      const imageUrl = href.slice(0, paramsStartAt);
-
-      console.log({
-        href,
-        imageUrl,
-      });
-
       const {
         resizeWidth,
         resizeHeight,
@@ -58,6 +57,7 @@ imageRouter.get(
 
       console.log({
         parsedParams,
+        imageUrl,
       });
 
       const { data: image } = await axios({
@@ -76,34 +76,6 @@ imageRouter.get(
 
       // TODO check if format can be undefined
       let newFormat: Format | undefined = format === "svg" ? "webp" : format;
-
-      // TODO move above axios request?
-      const paramsObj = getParamsObj({
-        resizeWidth,
-        resizeHeight,
-        rotateAngle,
-        isFlip,
-        isFlop,
-        isGreyscale,
-        isBlur,
-        toQuality,
-      });
-
-      const cacheFileName = `${key}/${normalizeName(imageUrl)}-${addParams(
-        paramsObj
-      )}.${newFormat}`;
-
-      const cachedFile = await loadCachedFile(cacheFileName);
-
-      if (cachedFile) {
-        // TODO logging
-        res.type(`image/${newFormat}`);
-        res.set("Cache-Control", `public, max-age=${60 * 60 * 24}`);
-
-        cachedFile.pipe(res);
-
-        return;
-      }
 
       console.log({
         originalWidth,

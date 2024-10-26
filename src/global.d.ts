@@ -24,6 +24,10 @@ declare global {
         toQuality?: number;
         toFormat?: ToFormat;
       };
+
+      imageUrl: string;
+
+      cacheFileName: string;
     }
   }
 }

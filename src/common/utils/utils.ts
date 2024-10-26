@@ -58,3 +58,33 @@ export const timeoutHalt = (
     req.socket.destroy();
   }
 };
+
+export const getFormat = (contentType: string) => {
+  if (contentType.includes("image/jpeg")) {
+    return "jpeg";
+  }
+
+  if (contentType.includes("image/png")) {
+    return "png";
+  }
+
+  if (contentType.includes("image/webp")) {
+    return "webp";
+  }
+
+  if (contentType.includes("image/gif")) {
+    return "gif";
+  }
+
+  if (contentType.includes("image/avif")) {
+    return "avif";
+  }
+
+  if (contentType.includes("image/tiff")) {
+    return "tiff";
+  }
+
+  if (contentType.includes("image/svg+xml")) {
+    return "svg";
+  }
+};
